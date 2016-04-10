@@ -163,13 +163,12 @@ int main(int argc, char **argv) {
 
 	uint32_t frequency = DEFAULT_FREQUENCY;
 	uint32_t samp_rate = DEFAULT_SAMPLE_RATE;
-	int gainReductionMode = DEFAULT_GAIN_REDUCTION;
 	int rspLNA = DEFAULT_LNA;
 	int i, j;
 	mir_sdr_Bw_MHzT bandwidth = mir_sdr_BW_1_536;
 	mir_sdr_If_kHzT ifKhz = mir_sdr_IF_Zero;
 
-	while ((opt = getopt(argc, argv, "f:g:s:n:r:l:b:i:x:")) != -1) {
+	while ((opt = getopt(argc, argv, "f:g:s:n:l:b:i:x:")) != -1) {
 		switch (opt) {
 			case 'f':
 				frequency = (uint32_t) atofs(optarg);
@@ -179,9 +178,6 @@ int main(int argc, char **argv) {
 				break;
 			case 's':
 				samp_rate = (uint32_t) atofs(optarg);
-				break;
-			case 'r':
-				gainReductionMode = atoi(optarg);
 				break;
 			case 'l':
 				rspLNA = atoi(optarg);
@@ -201,6 +197,12 @@ int main(int argc, char **argv) {
 		}
 	}
 
+	/* FIXME, validate inputs, as suggested by Andy:
+     * """You also might want to do some checking of sample rate and IF bandiwith and IF mode as only certain combinations are valid states.
+     * Although you will get an error condition from the API if it detects an invalid case."""
+     *
+    */
+
 	if (argc <= optind) {
 		usage();
 	} else {
@@ -209,7 +211,6 @@ int main(int argc, char **argv) {
 
 	fprintf(stdout, "[DEBUG] *************** play_sdr16 init summary *********************\n");
 	fprintf(stdout, "[DEBUG] LNA: %d\n", rspLNA);
-	fprintf(stdout, "[DEBUG] gainReductionMode: %d\n", gainReductionMode);
 	fprintf(stdout, "[DEBUG] samp_rate: %d\n", samp_rate);
 	fprintf(stdout, "[DEBUG] gain: %d\n", gain);
 	fprintf(stdout, "[DEBUG] frequency: [Hz] %d / [MHz] %f\n", frequency, frequency / 1e6);
@@ -254,12 +255,12 @@ int main(int argc, char **argv) {
 		}
 	}
 
-	if (gainReductionMode == 1) {
-		mir_sdr_SetParam(201, 1);
-		mir_sdr_SetParam(202, rspLNA == 1 ? 0 : 1);
-	}
 
-	r = mir_sdr_Init((gainReductionMode == 1 ? gain : 78 - gain), (samp_rate / 1e6), (frequency / 1e6),
+	mir_sdr_SetParam(201, 1);
+	mir_sdr_SetParam(202, rspLNA == 1 ? 0 : 1);
+
+
+	r = mir_sdr_Init(gain, (samp_rate / 1e6), (frequency / 1e6),
 					 bandwidth, ifKhz, &samplesPerPacket);
 
 
