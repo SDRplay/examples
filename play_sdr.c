@@ -359,18 +359,16 @@ int main(int argc, char **argv)
     mir_sdr_GetDevices(&devices[0], &numDevs, 4);
 
     for(i = 0; i < numDevs; i++) {
-        if(devices[i].devAvail == 1) {
+        if(devices[i].hwVer == 2 && devices[i].devAvail == 1) {
+            devAvail++;
+        }
+        else{ // devAvail not available on RSP hardware Version 1
             devAvail++;
         }
     }
 
     if (devAvail == 0) {
         fprintf(stderr, "ERROR: No RSP devices available.\n");
-        exit(1);
-    }
-
-    if (devices[device].devAvail != 1) {
-        fprintf(stderr, "ERROR: RSP selected (%d) is not available.\n", (device + 1));
         exit(1);
     }
 
