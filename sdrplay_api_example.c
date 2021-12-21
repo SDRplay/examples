@@ -43,7 +43,7 @@ void EventCallback(sdrplay_api_EventT eventId, sdrplay_api_TunerSelectT tuner, s
     case sdrplay_api_PowerOverloadChange:
         printf("sdrplay_api_PowerOverloadChange: tuner=%s powerOverloadChangeType=%s\n", (tuner == sdrplay_api_Tuner_A)? "sdrplay_api_Tuner_A": "sdrplay_api_Tuner_B", (params->powerOverloadParams.powerOverloadChangeType == sdrplay_api_Overload_Detected)? "sdrplay_api_Overload_Detected": "sdrplay_api_Overload_Corrected");
         // Send update message to acknowledge power overload message received
-        sdrplay_api_Update(chosenDevice->dev, tuner, sdrplay_api_Update_Ctrl_OverloadMsgAck);
+        sdrplay_api_Update(chosenDevice->dev, tuner, sdrplay_api_Update_Ctrl_OverloadMsgAck, sdrplay_api_Update_Ext1_None);
         break;
 
     case sdrplay_api_RspDuoModeChange:
@@ -342,7 +342,7 @@ int main(int argc, char *argv[])
                         // Limit it to a maximum of 59dB
                         if (chParams->tunerParams.gain.gRdB > 59)
                             chParams->tunerParams.gain.gRdB = 20;
-                        if ((err = sdrplay_api_Update(chosenDevice->dev, chosenDevice->tuner, sdrplay_api_Update_Tuner_Gr)) != sdrplay_api_Success)
+                        if ((err = sdrplay_api_Update(chosenDevice->dev, chosenDevice->tuner, sdrplay_api_Update_Tuner_Gr, sdrplay_api_Update_Ext1_None)) != sdrplay_api_Success)
                         {
                             printf("sdrplay_api_Update sdrplay_api_Update_Tuner_Gr failed %s\n", sdrplay_api_GetErrorString(err));
                             break;
@@ -354,7 +354,7 @@ int main(int argc, char *argv[])
                         // Limit it to a minimum of 20dB
                         if (chParams->tunerParams.gain.gRdB < 20)
                             chParams->tunerParams.gain.gRdB = 59;
-                        if ((err = sdrplay_api_Update(chosenDevice->dev, chosenDevice->tuner, sdrplay_api_Update_Tuner_Gr)) != sdrplay_api_Success)
+                        if ((err = sdrplay_api_Update(chosenDevice->dev, chosenDevice->tuner, sdrplay_api_Update_Tuner_Gr, sdrplay_api_Update_Ext1_None)) != sdrplay_api_Success)
                         {
                             printf("sdrplay_api_Update sdrplay_api_Update_Tuner_Gr failed %s\n", sdrplay_api_GetErrorString(err));
                             break;
